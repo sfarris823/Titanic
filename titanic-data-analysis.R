@@ -19,7 +19,7 @@ factorit <- function (dframe, na="Unk")
 # showhist() builds a histogram using a facetwrap
 showhist <- function(data, xaxis, fillgrp, facetwrap, title) 
 {
-  ggplot(data, aes(x = data[,xaxis], fill = data[,fillgrp])) +
+  ggplot(data, aes_string(x = xaxis, fill = fillgrp)) +
     stat_count(width = 0.5) + 
     facet_wrap(facetwrap) +
     ggtitle(title) +
@@ -65,21 +65,15 @@ combined$SimpleTitle[which(combined$SimpleTitle=="Rev")] <- "Mr"
 combined$SimpleTitle[which(combined$SimpleTitle=="Ms")] <- "Miss"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="female")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="male")] <- "Mr"
+combined$SimpleTitle <- as.factor(combined$SimpleTitle)
 
 # play with plots
-
-train.adj <- combined[1:891,]
-showhist(train.adj, "SimpleTitle", "Survived", ~Pclass, "Survival Rates by Passenger Class and Simplified Title")
-
-ggplot(train.adj, aes(x = train.adj[,"SimpleTitle"], fill = train.adj[,"Survived"])) +
-  stat_count(width = 0.75) + 
-  facet_wrap(~Pclass) 
-
-#showhist(combined[1:891,], "Sex", "Survived", ~Pclass, "Survival Rates by Passenger Class and Sex")
-#showhist(combined[1:891,], "Embarked", "Survived", ~Pclass, "Survival Rates by Passenger Class and Embarked")
-#showhist(combined[1:891,], "Embarked", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Embarked")
-#showhist(combined[1:891,], "SibSp", "Survived", ~Pclass, "Survival Rates by Passenger Class and SibSp")
-#showhist(combined[1:891,], "SibSp", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and SibSp")
-#showhist(combined[1:891,], "Parch", "Survived", ~Pclass, "Survival Rates by Passenger Class and Parch")
-#showhist(combined[1:891,], "Parch", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Parch")
-#showhist(combined[1:891,], "Sex", "Survived", ~Pclass+Embarked, "Survival Rates by Passenger Class/Embarked and Sex")
+showhist(combined[1:891,], "SimpleTitle", "Survived", ~Pclass, "Survival Rates by Passenger Class and Simplified Title")
+showhist(combined[1:891,], "Sex", "Survived", ~Pclass, "Survival Rates by Passenger Class and Sex")
+showhist(combined[1:891,], "Embarked", "Survived", ~Pclass, "Survival Rates by Passenger Class and Embarked")
+showhist(combined[1:891,], "Embarked", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Embarked")
+showhist(combined[1:891,], "SibSp", "Survived", ~Pclass, "Survival Rates by Passenger Class and SibSp")
+showhist(combined[1:891,], "SibSp", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and SibSp")
+showhist(combined[1:891,], "Parch", "Survived", ~Pclass, "Survival Rates by Passenger Class and Parch")
+showhist(combined[1:891,], "Parch", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Parch")
+showhist(combined[1:891,], "Sex", "Survived", ~Pclass+Embarked, "Survival Rates by Passenger Class/Embarked and Sex")
