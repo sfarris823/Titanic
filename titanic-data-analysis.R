@@ -83,3 +83,4 @@ ggplot(train.adj, aes(x = train.adj[,"SimpleTitle"], fill = train.adj[,"Survived
 #showhist(combined[1:891,], "Parch", "Survived", ~Pclass, "Survival Rates by Passenger Class and Parch")
 #showhist(combined[1:891,], "Parch", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Parch")
 #showhist(combined[1:891,], "Sex", "Survived", ~Pclass+Embarked, "Survival Rates by Passenger Class/Embarked and Sex")
+#
