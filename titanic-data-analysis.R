@@ -5,10 +5,13 @@ rm(list=ls())
 library(dplyr)
 library(ggplot2)
 
-# my custom functions
+##
+## Custom functions
+##
 
 # factorit() will take a data frame column and replace NAs, empty 
 # strings with another value and returns the column as a factor
+
 factorit <- function (dframe, na="Unk") 
 {
   dframe[which(is.na(dframe))] <- na
@@ -16,7 +19,9 @@ factorit <- function (dframe, na="Unk")
   return (as.factor(dframe))
 }
 
+
 # showhist() builds a histogram using a facetwrap
+
 showhist <- function(data, xaxis, fillgrp, facetwrap, title) 
 {
   ggplot(data, aes_string(x = xaxis, fill = fillgrp)) +
@@ -28,7 +33,11 @@ showhist <- function(data, xaxis, fillgrp, facetwrap, title)
     labs(fill = fillgrp)
 }
 
-# read the train and test csv files into R
+##
+## Get data
+##
+
+# Read the train and test csv files into R
 train <- read.csv("train.csv", stringsAsFactors = F)
 test <- read.csv("test.csv", stringsAsFactors = F)
 
@@ -39,7 +48,7 @@ test <- select(temp.test, PassengerId, Survived, Pclass:Embarked)
 rm (temp.test)
 combined <- rbind(train, test)
 
-# convert a few columns to factors so they can be analyzed using ggplot
+# Convert a few columns to factors so they can be analyzed using ggplot
 combined$Survived <- as.factor(combined$Survived)
 combined$Pclass <- as.factor(combined$Pclass)
 combined$Sex <- as.factor(combined$Sex)
@@ -47,7 +56,11 @@ combined$Embarked <- factorit(combined$Embarked)
 combined$SibSp <- factorit(combined$SibSp)
 combined$Parch <- factorit(combined$Parch)
 
-# add new features
+##
+## Add new features
+##
+
+# Simplify the Titles into Master, Mr, Miss, and Mrs
 combined$Title <- gsub('(.*, )|(\\..*)', '', combined$Name)
 combined$SimpleTitle <- combined$Title
 combined$SimpleTitle[which(combined$SimpleTitle=="Don")] <- "Mr"
@@ -67,7 +80,17 @@ combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="female")]
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="male")] <- "Mr"
 combined$SimpleTitle <- as.factor(combined$SimpleTitle)
 
-# play with plots
+# Calculate the family unit size
+combined$FamilySize <- as.numeric(paste(combined$SibSp)) + as.numeric(paste(combined$Parch)) + 1
+combined$FamilySize <- as.factor(combined$FamilySize)
+
+
+
+##
+##  Explore the data with plots
+##
+
+# Play with plots
 showhist(combined[1:891,], "SimpleTitle", "Survived", ~Pclass, "Survival Rates by Passenger Class and Simplified Title")
 showhist(combined[1:891,], "Sex", "Survived", ~Pclass, "Survival Rates by Passenger Class and Sex")
 showhist(combined[1:891,], "Embarked", "Survived", ~Pclass, "Survival Rates by Passenger Class and Embarked")
@@ -77,3 +100,27 @@ showhist(combined[1:891,], "SibSp", "Survived", ~Pclass+Sex, "Survival Rates by 
 showhist(combined[1:891,], "Parch", "Survived", ~Pclass, "Survival Rates by Passenger Class and Parch")
 showhist(combined[1:891,], "Parch", "Survived", ~Pclass+Sex, "Survival Rates by Passenger Class/Sex and Parch")
 showhist(combined[1:891,], "Sex", "Survived", ~Pclass+Embarked, "Survival Rates by Passenger Class/Embarked and Sex")
+
+# Explore adult males
+train.adj <- combined[1:891,]
+train.adj$Survived <- as.factor(train.adj$Survived)
+train.adj$Pclass <- as.factor(train.adj$Pclass)
+train.adj$FamilySize <- as.factor(train.adj$FamilySize)
+train.adj$SimpleTitle <- as.factor(train.adj$SimpleTitle)
+
+train.adj.mr <- train.adj[train.adj$SimpleTitle=="Mr",]
+train.adj.mr$Survived <- as.factor(train.adj.mr$Survived)
+train.adj.mr$Pclass <- as.factor(train.adj.mr$Pclass)
+train.adj.mr$FamilySize <- as.factor(train.adj.mr$FamilySize)
+showhist(train.adj.mr, "Age", "Survived", ~Pclass, "Survival Rates by Passenger Class and Age")
+showhist(train.adj.mr, "FamilySize", "Survived", ~Pclass, "Survival Rates by Passenger Class and Age")
+# Note: if your family size was >4 regardless of pclass, you likely perished.
+
+# Explore family size   
+showhist(train.adj, "FamilySize", "Survived", ~Pclass+SimpleTitle, "Survival Rates by Passenger Class and Age")
+# Note: if your family size was >4 and you were in 3rd class, you likely perished.
+
+# Explore cabin
+table(filter(select(combined, Pclass, Cabin), Pclass=="1"))
+table(filter(select(combined, Pclass, Cabin), Pclass=="2"))
+table(filter(select(combined, Pclass, Cabin), Pclass=="3"))
