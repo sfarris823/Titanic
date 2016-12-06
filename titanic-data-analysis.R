@@ -59,7 +59,7 @@ combined$Parch <- factorit(combined$Parch)
 ##
 ## Add new features
 ##
-
+ 
 # Simplify the Titles into Master, Mr, Miss, and Mrs
 combined$Title <- gsub('(.*, )|(\\..*)', '', combined$Name)
 combined$SimpleTitle <- combined$Title
