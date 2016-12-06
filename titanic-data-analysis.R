@@ -63,19 +63,22 @@ combined$Parch <- factorit(combined$Parch)
 # Simplify the Titles into Master, Mr, Miss, and Mrs
 combined$Title <- gsub('(.*, )|(\\..*)', '', combined$Name)
 combined$SimpleTitle <- combined$Title
+# Simplify Mr titles
 combined$SimpleTitle[which(combined$SimpleTitle=="Don")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Dona")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Capt")] <- "Mr"
 combined$SimpleTitle[which(combined$SimpleTitle=="Col")] <- "Mr"
 combined$SimpleTitle[which(combined$SimpleTitle=="Major")] <- "Mr"
 combined$SimpleTitle[which(combined$SimpleTitle=="Jonkheer")] <- "Mr"
 combined$SimpleTitle[which(combined$SimpleTitle=="Sir")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Lady")] <- "Mrs"
+combined$SimpleTitle[which(combined$SimpleTitle=="Rev")] <- "Mr"
+# Simplify Miss titles
 combined$SimpleTitle[which(combined$SimpleTitle=="Mlle")] <- "Miss"
+combined$SimpleTitle[which(combined$SimpleTitle=="Ms")] <- "Miss"
+# Simplify Mrs titles
+combined$SimpleTitle[which(combined$SimpleTitle=="Dona")] <- "Mrs"
+combined$SimpleTitle[which(combined$SimpleTitle=="Lady")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Mme")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="the Countess")] <- "Mrs"
-combined$SimpleTitle[which(combined$SimpleTitle=="Rev")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Ms")] <- "Miss"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="female")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="male")] <- "Mr"
 combined$SimpleTitle <- as.factor(combined$SimpleTitle)
