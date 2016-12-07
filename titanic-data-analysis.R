@@ -1,14 +1,28 @@
 # reset environmental
 rm(list=ls())
 
-# load needed libraries
-library(dplyr)           #data manipulation
-library(ggplot2)         #simple plots
-library(randomForest)    #exploratory modeling
-library(caret)           #cross validation
-library(doSNOW)          #clustering for performance
-library(rpart)
-library(rpart.plot)
+##
+## Install/Load needed libraries
+##
+
+# List of packages for session
+.packages = c("dplyr",          # data manipulation
+              "ggplot2",        # simple plots 
+              "randomForest",   # exploratory modeling
+              "caret",          # cross validation
+              "doSNOW",         # clustering for performance
+              "rpart",          # recursive partitioning
+              "rpart.plot"      # plotting decision trees  
+             )
+
+# Install CRAN packages (if not already installed)
+.inst <- .packages %in% installed.packages()
+if(length(.packages[!.inst]) > 0) install.packages(.packages[!.inst])
+
+# Load packages into session 
+lapply(.packages, library, character.only=TRUE)
+rm(.packages)
+rm(.inst)
 
 ##
 ## Custom functions
@@ -38,6 +52,7 @@ showhist <- function(data, xaxis, fillgrp, facetwrap, title)
     labs(fill = fillgrp)
 }
 
+# rpart.cv() trains a predictive model 
 rpart.cv <- function(seed, training, labels, ctrl)
 {
   set.seed(seed)
@@ -77,21 +92,12 @@ combined$Parch <- factorit(combined$Parch)
 combined$Title <- gsub('(.*, )|(\\..*)', '', combined$Name)
 combined$SimpleTitle <- combined$Title
 # Simplify Mr titles
-combined$SimpleTitle[which(combined$SimpleTitle=="Don")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Capt")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Col")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Major")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Jonkheer")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Sir")] <- "Mr"
-combined$SimpleTitle[which(combined$SimpleTitle=="Rev")] <- "Mr"
+combined$SimpleTitle[which(combined$SimpleTitle %in% c("Don", "Jonkheer", "Sir", "Capt", "Col", "Major", "Rev"))] <- "Mr"
 # Simplify Miss titles
-combined$SimpleTitle[which(combined$SimpleTitle=="Mlle")] <- "Miss"
-combined$SimpleTitle[which(combined$SimpleTitle=="Ms")] <- "Miss"
+combined$SimpleTitle[which(combined$SimpleTitle %in% c("Mlle", "Ms"))] <- "Miss"
+
 # Simplify Mrs titles
-combined$SimpleTitle[which(combined$SimpleTitle=="Dona")] <- "Mrs"
-combined$SimpleTitle[which(combined$SimpleTitle=="Lady")] <- "Mrs"
-combined$SimpleTitle[which(combined$SimpleTitle=="Mme")] <- "Mrs"
-combined$SimpleTitle[which(combined$SimpleTitle=="the Countess")] <- "Mrs"
+combined$SimpleTitle[which(combined$SimpleTitle %in% c("Dona", "Lady", "Mme", "the Countess"))] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="female")] <- "Mrs"
 combined$SimpleTitle[which(combined$SimpleTitle=="Dr" & combined$Sex=="male")] <- "Mr"
 combined$SimpleTitle <- as.factor(combined$SimpleTitle)
