@@ -4,6 +4,9 @@
 ## URL:        https://www.kaggle.com/c/titanic
 ## Submitted:  December 11, 2016 - 0.80383
 ##
+##  To Do:  look at 1st class males, 3rd class miss and mrs. alone
+##          and see what kind of predictions can be done.
+##
 ########################################################################
 
 # reset environment
