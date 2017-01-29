@@ -7,6 +7,9 @@
 ##  To Do:  look at 1st class males, 3rd class miss and mrs. alone
 ##          and see what kind of predictions can be done.
 ##
+##          Separate the data from above, perform separate predictive models,
+##          and then merge the results.
+##
 ########################################################################
 
 # reset environment
@@ -216,7 +219,12 @@ rm (avg.fare, current.avg.fare, current.ticket, i, k, party.indexes, ticket.part
 # based on mean of other average fares in 3rd class
 combined[1044, "Fare"] <- mean(combined[combined$Pclass==3,"AverageFare"], na.rm=T)
 
-
+fcam <- filter(combined, Pclass==1, SimpleTitle=="Mr")
+tcmiss <- filter(combined, Pclass==3, SimpleTitle=="Miss")
+tcmrs <- filter(combined, Pclass==3, SimpleTitle=="Mrs")
+specialgrp <- rbind(fcam,tcmiss, tcmrs)
+combined.bkp <- combined
+combined <- specialgrp
 ########################################################################
 ##
 ## Exploratory Data Analysis
@@ -224,7 +232,7 @@ combined[1044, "Fare"] <- mean(combined[combined$Pclass==3,"AverageFare"], na.rm
 ########################################################################
 
 # Convert a few columns to factors so they can be analyzed using ggplot
-combined$Survived <- as.factor(combined$Survived)
+#combined$Survived <- as.factor(combined$Survived)
 combined$Pclass <- as.factor(combined$Pclass)
 combined$Sex <- as.factor(combined$Sex)
 combined$Embarked <- factorit(combined$Embarked)
@@ -244,7 +252,7 @@ showhist(combined[1:891,], "SimpleTitle", "Survived", ~Pclass, "Survival Rates b
 
 # Explore adult males
 train.adj <- combined[1:891,]
-train.adj$Survived <- as.factor(train.adj$Survived)
+#train.adj$Survived <- as.factor(train.adj$Survived)
 train.adj$Pclass <- as.factor(train.adj$Pclass)
 train.adj$FamilySize <- as.factor(train.adj$FamilySize)
 train.adj$SimpleTitle <- as.factor(train.adj$SimpleTitle)
@@ -271,8 +279,11 @@ table(filter(select(combined, Pclass, Cabin), Pclass=="3"))
 
 # Build an ensemble of decision trees (random forest)
 set.seed(1234)
-rf.1 <- randomForest(x = combined[1:891, c("Pclass", "SimpleTitle", "FamilySize")], 
-                     y = as.factor(train$Survived), importance = T, ntree = 500)
+#rf.1.features <- c("Pclass", "SimpleTitle", "FamilySize")
+#rf.1 <- randomForest(x = combined[1:891, rf.1.features], y = as.factor(train$Survived), importance = T, ntree = 500)
+rf.1.features <- c("Pclass", "SimpleTitle")
+special.survived <- combined[1:119,]
+rf.1 <- randomForest(x = combined[1:119, rf.1.features], y = as.factor(special.survived$Survived), importance = T, ntree = 500)
 # View the results of the random forest, OOB estimate of error rate is 17.06%.  82.94% accuracy.
 rf.1
 # Draw a Variable Importance Plot.  SimpleTitle seems to be the most important
