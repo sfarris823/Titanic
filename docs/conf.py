@@ -91,7 +91,7 @@ html_theme_path = ['_themes', ]
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {
+html_theme_options = {
     "collapse_navigation" : True
 }
 
